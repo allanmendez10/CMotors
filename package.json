@@ -1,13 +1,14 @@
 {
     "name": "CMotors_Backend",
     "version": "1.0.0",
-    "description": "",
+    "description": "Backend CMotors",
     "main": "index.js",
     "scripts": {
-        "dev": "nodemon src/index.js"
+        "dev": "nodemon src/index.js",
+        "start": "index.js"
     },
     "keywords": [],
-    "author": "",
+    "author": "Allan Cordero Méndez",
     "license": "ISC",
     "dependencies": {
         "express": "^4.17.1",
