@@ -9,18 +9,15 @@ const pool = new Pool({
 
 })
 
-/*
- id serial primary key,
-    name varchar(40),
-    email text,
-    address varchar(100),
-    phone varchar(10),
-    status varchar(10),
-    password varchar(50),
-    img text,
-    lastname varchar(20)
-); 
-*/
+/*const pool = new Pool({
+    user: 'postgres',
+    host: 'localhost',
+    password: 'postgres',
+    database: 'CMotors',
+    port: '5432',
+
+})*/
+
 
 const getItems = async(req, res) => {
     try {

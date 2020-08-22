@@ -1,31 +1,36 @@
 const { Pool } = require('pg')
 
-const pool = new Pool({
-        user: 'hsufhgxbbmkzys',
-        host: 'ec2-3-214-4-151.compute-1.amazonaws.com',
-        password: 'a39f3df7b52d02298a0b88395253e7283b807c39194834aed25542d04083a07c',
-        database: 'd2drtgcfq0pq7e',
-        port: '5432',
+/*const pool = new Pool({
+    user: 'postgres',
+    host: 'localhost',
+    password: 'postgres',
+    database: 'CMotors',
+    port: '5432',
 
-    })
-    /*
-     id serial primary key,
-        name varchar(40),
-        email text,
-        address varchar(100),
-        phone varchar(10),
-        status varchar(10),
-        password varchar(50),
-        img text,
-        lastname varchar(20)
-    ); 
-    */
+}) */
+
+const pool = new Pool({
+    user: 'hsufhgxbbmkzys',
+    host: 'ec2-3-214-4-151.compute-1.amazonaws.com',
+    password: 'a39f3df7b52d02298a0b88395253e7283b807c39194834aed25542d04083a07c',
+    database: 'd2drtgcfq0pq7e',
+    port: '5432',
+
+})
 
 const getCompanies = async(req, res) => {
     try {
 
         //  const response = await pool.query('SELECT to_json(r) FROM (SELECT * FROM users ORDER BY id ASC) r');
-        const response = await pool.query('SELECT * FROM companies ORDER BY id ASC');
+
+        const lat = req.body.lat;
+        const lng = req.body.lng;
+
+        console.log(lat, lng)
+
+        const response = await pool.query('SELECT *, ROUND(((point($2, $1) <@>  (point(lon, lat)::point)) * 1.60934)::numeric,2) as distance FROM companies ORDER BY  distance asc', [lat, lng]);
+
+        // const response = await pool.query('SELECT * FROM companies ORDER BY id ASC');
 
         res.status(200).json({
             message: 'Successful',
