@@ -1,21 +1,22 @@
 {
-    "name": "CMotors_Backend",
-    "version": "1.0.0",
-    "description": "Backend CMotors",
-    "main": "index.js",
-    "scripts": {
-        "dev": "nodemon index.js",
-        "start": "node index.js"
-    },
-    "keywords": [],
-    "author": "Allan Cordero Méndez",
-    "license": "ISC",
-    "dependencies": {
-        "express": "^4.17.1",
-        "multer": "^1.4.2",
-        "pg": "^8.3.0"
-    },
-    "devDependencies": {
-        "nodemon": "^2.0.4"
-    }
+  "name": "CMotors_Backend",
+  "version": "1.0.0",
+  "description": "Backend CMotors",
+  "main": "index.js",
+  "scripts": {
+    "dev": "env-cmd --verbose -f ./config/dev.env nodemon src/index.js",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "Allan Cordero Méndez",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "multer": "^1.4.2",
+    "pg": "^8.4.1"
+  },
+  "devDependencies": {
+    "env-cmd": "^10.1.0",
+    "nodemon": "^2.0.6"
+  }
 }

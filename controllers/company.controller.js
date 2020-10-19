@@ -1,139 +1,65 @@
-const { Pool } = require('pg')
+const { pool } = require("../database/config");
+const {
+  errorResponse,
+  successResponse,
+} = require("../utils/responseDictionaries");
 
-/*const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    password: 'postgres',
-    database: 'CMotors',
-    port: '5432',
+const getCompanies = async (req, res) => {
+  try {
+    const lat = req.body.lat;
+    const lng = req.body.lng;
 
-}) */
+    const response = await pool.query(
+      "SELECT *, ROUND(((point($2, $1) <@>  (point(lon, lat)::point)) * 1.60934)::numeric,2) as distance FROM companies ORDER BY  distance asc",
+      [lat, lng]
+    );
 
-const pool = new Pool({
-    user: 'hsufhgxbbmkzys',
-    host: 'ec2-3-214-4-151.compute-1.amazonaws.com',
-    password: 'a39f3df7b52d02298a0b88395253e7283b807c39194834aed25542d04083a07c',
-    database: 'd2drtgcfq0pq7e',
-    port: '5432',
+    successResponse.data = response.rows.length == 0 ? null : response.rows;
 
-})
-
-const getCompanies = async(req, res) => {
-    try {
-
-        //  const response = await pool.query('SELECT to_json(r) FROM (SELECT * FROM users ORDER BY id ASC) r');
-
-        const lat = req.body.lat;
-        const lng = req.body.lng;
-
-        console.log(lat, lng)
-
-        const response = await pool.query('SELECT *, ROUND(((point($2, $1) <@>  (point(lon, lat)::point)) * 1.60934)::numeric,2) as distance FROM companies ORDER BY  distance asc', [lat, lng]);
-
-        // const response = await pool.query('SELECT * FROM companies ORDER BY id ASC');
-
-        res.status(200).json({
-            message: 'Successful',
-            isSuccessFul: true,
-            status: 200,
-            data: response.rows.length == 0 ? null : response.rows
-        });
-
-    } catch (error) {
-
-        res.status(500).json({
-            message: error,
-            isSuccessFul: false,
-            status: 500,
-            data: null
-        }).status(408).json({
-            message: 'Request timeout',
-            isSuccessFul: false,
-            status: 408,
-            data: null
-        }).status(404).json({
-            message: 'Not found',
-            isSuccessFul: false,
-            status: 404,
-            data: null
-        });
-    }
+    res.status(200).json(successResponse);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(errorResponse);
+  }
 };
 
-const getCompanyById = async(req, res) => {
+const getCompanyById = async (req, res) => {
+  try {
+    const id = req.params.id;
 
-    try {
-        const id = req.params.id;
+    const response = await pool.query("SELECT * FROM companies WHERE id $1", [
+      id,
+    ]);
 
-        const response = await pool.query("SELECT * FROM companies WHERE id $1", [id]);
-        res.status(200).json({
-            message: 'Success',
-            isSuccessFul: true,
-            status: 200,
-            data: response.rows.length == 0 ? null : response.rows[0]
-        }).status(408).json({
-            message: 'Request timeout',
-            isSuccessFul: false,
-            status: 408,
-            data: null
-        }).status(404).json({
-            message: 'Not found',
-            isSuccessFul: false,
-            status: 404,
-            data: null
-        });
+    successResponse.data = response.rows.length == 0 ? null : response.rows;
 
-    } catch (error) {
-        res.status(500).json({
-            message: error,
-            isSuccessFul: false,
-            status: 500,
-            data: null
-        })
-    }
+    res.status(200).json(successResponse);
+  } catch (error) {
+    res.status(500).json(errorResponse);
+  }
 };
 
-const createCompany = async(req, res) => {
+const createCompany = async (req, res) => {
+  try {
+    const { name, address, lat, lon, logo, distance } = req.body;
+    const response = await pool.query(
+      "INSERT INTO companies (name, address, lat, lon, status, logo, distance) VALUES ($1, $2, $3, $4, '1', $5, $6) returning id",
+      [name, address, lat, lon, logo, distance]
+    );
 
-    try {
-        const { name, address, lat, lon, logo, distance } = req.body;
-        const response = await pool.query("INSERT INTO companies (name, address, lat, lon, status, logo, distance) VALUES ($1, $2, $3, $4, '1', $5, $6) returning id", [name, address, lat, lon, logo, distance]);
-        res.status(200).json({
-            message: 'Company added successfully',
-            isSuccessFul: true,
-            status: 200,
-            data: {
-                id: response.rows[0].id,
-                name: name,
-            }
-        }).status(408).json({
-            message: 'Request timeout',
-            isSuccessFul: false,
-            status: 408,
-            data: null
-        }).status(404).json({
-            message: 'Not found',
-            isSuccessFul: false,
-            status: 404,
-            data: null
-        });
-
-    } catch (error) {
-
-        res.status(500).json({
-            message: error,
-            isSuccessFul: false,
-            status: 500,
-            data: null
-        })
-
-    }
-
-
+    successResponse.message = "Company added successfully";
+    successResponse.data = {
+      id: response.rows[0].id,
+      name: name,
+    };
+    res.status(200).json(successResponse);
+  } catch (error) {
+    res.status(500).json(errorResponse);
+  }
 };
 
 module.exports = {
-    getCompanies,
-    getCompanyById,
-    createCompany
+  getCompanies,
+  getCompanyById,
+  createCompany,
 };
