@@ -26,13 +26,12 @@ const getUserById = async (req, res) => {
       [email, password]
     );
 
-    successResponse.message = "User or Password incorrect";
     successResponse.data = response.rows.length == 0 ? null : response.rows[0];
 
     if (response == null || response.rows.length == 0) {
+      successResponse.message = "User or Password incorrect";
       res.status(200).json(successResponse);
     } else {
-      successResponse.message = "Success";
       res.status(200).json(successResponse);
     }
   } catch (error) {

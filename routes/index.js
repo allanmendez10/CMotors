@@ -23,6 +23,14 @@ const {
 } = require("../controllers/index.controller");
 
 router.get("/api/v1/user/", getUsers);
+
+router.get("/privacity_police", (req, res) => {
+  res.render("privacity_police", {
+    title: "About Me",
+    name: "Andrew Mead",
+  });
+});
+
 router.post("/api/v1/user/login", getUserById);
 //router.post('/user/register', createUser);
 router.post("/api/v1/user/register", upload.single("user_image"), createUser);
